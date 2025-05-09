@@ -137,6 +137,19 @@ impl INode2D for Pong {
                 .unwrap()
                 .set_multiplayer_authority(authority);
         }
+
+        let gd_ref = self.to_gd();
+        self.exit_game
+            .as_mut()
+            .unwrap()
+            .signals()
+            .pressed()
+            .connect_builder()
+            .object(&gd_ref)
+            .method_mut(|this: &mut Self| {
+                this._on_exit_game_pressed();
+            })
+            .done();
     }
 }
 

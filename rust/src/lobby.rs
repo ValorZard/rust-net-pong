@@ -1,4 +1,5 @@
 use godot::classes::enet_connection::CompressionMode;
+use godot::classes::object::ConnectFlags;
 use godot::classes::project_settings;
 /*
 extends Panel
@@ -222,6 +223,7 @@ impl IPanel for Lobby {
                     .method_mut(|this: &mut Self| {
                         this._end_game("Client disconnected.".to_string());
                     })
+                    .flags(ConnectFlags::DEFERRED)
                     .done();
 
                 this.base_mut()
