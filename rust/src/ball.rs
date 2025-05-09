@@ -15,6 +15,8 @@ pub struct Ball {
 
 use godot::classes::IArea2D;
 
+use crate::pong::Pong;
+
 #[godot_api]
 impl IArea2D for Ball {
     fn init(base: Base<Area2D>) -> Self {
@@ -53,6 +55,7 @@ impl IArea2D for Ball {
             self.direction.y = -self.direction.y;
         }
 
+        let mut parent = self.base().get_parent().unwrap().cast::<Pong>();
         if self.base().is_multiplayer_authority() {
             // Only the master will decide when the ball is out in
             // the left side (its own side). This makes the game
@@ -63,6 +66,7 @@ impl IArea2D for Ball {
                 //self.base().get_parent().update_score.rpc(false);
                 let args = varray![false];
                 let args = variant_array_to_vec(args);
+                parent.rpc("update_score", args.as_slice());
                 self.base_mut().rpc("reset_ball", args.as_slice());
             }
         } else {
@@ -75,6 +79,7 @@ impl IArea2D for Ball {
                 //self.base().get_parent().update_score.rpc(true);
                 let args = varray![true];
                 let args = variant_array_to_vec(args);
+                parent.rpc("update_score", args.as_slice());
                 self.base_mut().rpc("reset_ball", args.as_slice());
             }
         }

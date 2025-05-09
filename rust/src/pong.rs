@@ -168,8 +168,8 @@ impl Pong {
             $Ball.stop.rpc()
      */
     #[rpc(any_peer, call_local)]
-    fn update_score(&mut self, add_to_left: i32) {
-        if add_to_left != 0 {
+    fn update_score(&mut self, add_to_left: bool) {
+        if add_to_left {
             self.score_left += 1;
             self.score_left_node
                 .as_mut()
