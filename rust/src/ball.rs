@@ -5,7 +5,7 @@ const DEFAULT_SPEED: f64 = 100.0;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
-struct Ball {
+pub struct Ball {
     direction: Vector2,
     stopped: bool,
     _speed: f64,

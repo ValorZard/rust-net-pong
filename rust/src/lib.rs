@@ -7,3 +7,4 @@ unsafe impl ExtensionLibrary for RustExtension {}
 
 mod player;
 mod ball;
+mod pong;
