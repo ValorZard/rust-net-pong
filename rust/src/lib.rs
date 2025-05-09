@@ -18,5 +18,6 @@ fn variant_array_to_vec(array: VariantArray) -> Vec<Variant> {
 }
 
 mod ball;
+mod lobby;
 mod paddle;
 mod pong;

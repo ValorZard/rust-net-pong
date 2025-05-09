@@ -1,6 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://f85s2avde6r4"]
-
-[ext_resource type="Script" uid="uid://bnjfw5fu6g688" path="res://logic/lobby.gd" id="1"]
+[gd_scene format=3 uid="uid://f85s2avde6r4"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -38,7 +36,14 @@ text = "Multiplayer Pong"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LobbyPanel" type="Panel" parent="."]
+[node name="LobbyPanel" type="Lobby" parent="." node_paths=PackedStringArray("address", "host_button", "join_button", "status_ok", "status_fail", "port_forward_label", "find_public_ip_button")]
+address = NodePath("Address")
+host_button = NodePath("HostButton")
+join_button = NodePath("JoinButton")
+status_ok = NodePath("StatusOk")
+status_fail = NodePath("StatusFail")
+port_forward_label = NodePath("PortForward")
+find_public_ip_button = NodePath("FindPublicIP")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -53,7 +58,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 2
 size_flags_vertical = 2
-script = ExtResource("1")
 
 [node name="AddressLabel" type="Label" parent="LobbyPanel"]
 layout_mode = 0

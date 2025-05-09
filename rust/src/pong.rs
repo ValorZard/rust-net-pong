@@ -143,7 +143,7 @@ impl INode2D for Pong {
 #[godot_api]
 impl Pong {
     #[signal]
-    fn game_finished();
+    pub fn game_finished();
 
     /*
     @rpc("any_peer", "call_local")

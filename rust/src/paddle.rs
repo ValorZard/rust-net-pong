@@ -11,44 +11,44 @@ var _you_hidden := false
 @onready var _screen_size_y := get_viewport_rect().size.y
 
 func _process(delta: float) -> void:
-	# Is the master of the paddle.
-	if is_multiplayer_authority():
-		_motion = Input.get_axis(&"move_up", &"move_down")
+    # Is the master of the paddle.
+    if is_multiplayer_authority():
+        _motion = Input.get_axis(&"move_up", &"move_down")
 
-		if not _you_hidden and _motion != 0:
-			_hide_you_label()
+        if not _you_hidden and _motion != 0:
+            _hide_you_label()
 
-		_motion *= MOTION_SPEED
+        _motion *= MOTION_SPEED
 
-		# Using unreliable to make sure position is updated as fast
-		# as possible, even if one of the calls is dropped.
-		set_pos_and_motion.rpc(position, _motion)
-	else:
-		if not _you_hidden:
-			_hide_you_label()
+        # Using unreliable to make sure position is updated as fast
+        # as possible, even if one of the calls is dropped.
+        set_pos_and_motion.rpc(position, _motion)
+    else:
+        if not _you_hidden:
+            _hide_you_label()
 
-	translate(Vector2(0.0, _motion * delta))
+    translate(Vector2(0.0, _motion * delta))
 
-	# Set screen limits.
-	position.y = clampf(position.y, 16, _screen_size_y - 16)
+    # Set screen limits.
+    position.y = clampf(position.y, 16, _screen_size_y - 16)
 
 
 # Synchronize position and speed to the other peers.
 @rpc("unreliable")
 func set_pos_and_motion(pos: Vector2, motion: float) -> void:
-	position = pos
-	_motion = motion
+    position = pos
+    _motion = motion
 
 
 func _hide_you_label() -> void:
-	_you_hidden = true
-	$You.hide()
+    _you_hidden = true
+    $You.hide()
 
 
 func _on_paddle_area_enter(area: Area2D) -> void:
-	if is_multiplayer_authority():
-		# Random for new direction generated checked each peer.
-		area.bounce.rpc(left, randf()) 
+    if is_multiplayer_authority():
+        # Random for new direction generated checked each peer.
+        area.bounce.rpc(left, randf())
 */
 
 use godot::classes::{Area2D, Input, Label};
@@ -90,49 +90,48 @@ impl IArea2D for Paddle {
 
     fn ready(&mut self) {
         // bounce signal is emitted when the ball enters the paddle area.
-        self.signals().area_entered().connect_self(|this: &mut Self, mut area: Gd<Area2D>| {
-            if this.base().is_multiplayer_authority() {
-                // Random for new direction generated checked each peer.
-                let args = varray![this.left, randf()];
-                let varargs = variant_array_to_vec(args);
-                area.rpc("bounce", varargs.as_slice());
-            }
-        });
+        self.signals()
+            .area_entered()
+            .connect_self(|this: &mut Self, mut area: Gd<Area2D>| {
+                if this.base().is_multiplayer_authority() {
+                    // Random for new direction generated checked each peer.
+                    let args = varray![this.left, randf()];
+                    let varargs = variant_array_to_vec(args);
+                    area.rpc("bounce", varargs.as_slice());
+                }
+            });
     }
 
     /*
-        func _process(delta: float) -> void:
-        # Is the master of the paddle.
-        if is_multiplayer_authority():
-            _motion = Input.get_axis(&"move_up", &"move_down")
+       func _process(delta: float) -> void:
+       # Is the master of the paddle.
+       if is_multiplayer_authority():
+           _motion = Input.get_axis(&"move_up", &"move_down")
 
-            if not _you_hidden and _motion != 0:
-                _hide_you_label()
+           if not _you_hidden and _motion != 0:
+               _hide_you_label()
 
-            _motion *= MOTION_SPEED
+           _motion *= MOTION_SPEED
 
-            # Using unreliable to make sure position is updated as fast
-            # as possible, even if one of the calls is dropped.
-            set_pos_and_motion.rpc(position, _motion)
-        else:
-            if not _you_hidden:
-                _hide_you_label()
+           # Using unreliable to make sure position is updated as fast
+           # as possible, even if one of the calls is dropped.
+           set_pos_and_motion.rpc(position, _motion)
+       else:
+           if not _you_hidden:
+               _hide_you_label()
 
-        translate(Vector2(0.0, _motion * delta))
+       translate(Vector2(0.0, _motion * delta))
 
-        # Set screen limits.
-        position.y = clampf(position.y, 16, _screen_size_y - 16)
-     */
+       # Set screen limits.
+       position.y = clampf(position.y, 16, _screen_size_y - 16)
+    */
     fn process(&mut self, delta: f64) {
         if self.base().is_multiplayer_authority() {
             let input = Input::singleton();
             self._motion = input.get_axis("move_up", "move_down");
 
             if !self._you_hidden && self._motion != 0.0 {
-                self.you_label
-                    .as_mut()
-                    .unwrap()
-                    .hide();
+                self.you_label.as_mut().unwrap().hide();
             }
 
             self._motion *= MOTION_SPEED;
@@ -141,14 +140,11 @@ impl IArea2D for Paddle {
             // as possible, even if one of the calls is dropped.
             let args = varray![self.base().get_position(), self._motion];
             let varargs = variant_array_to_vec(args);
-            self.base_mut().rpc("set_pos_and_motion", varargs.as_slice());
-            
+            self.base_mut()
+                .rpc("set_pos_and_motion", varargs.as_slice());
         } else {
             if !self._you_hidden {
-                self.you_label
-                    .as_mut()
-                    .unwrap()
-                    .hide();
+                self.you_label.as_mut().unwrap().hide();
             }
         }
 

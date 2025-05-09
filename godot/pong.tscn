@@ -26,9 +26,9 @@ position = Vector2(320, 200)
 texture = ExtResource("2")
 
 [node name="Player1" parent="." instance=ExtResource("3")]
+left = true
 modulate = Color(0, 1, 1, 1)
 position = Vector2(32.49, 188.622)
-left = true
 
 [node name="Player2" parent="." instance=ExtResource("3")]
 modulate = Color(1, 0, 1, 1)
