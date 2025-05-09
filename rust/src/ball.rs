@@ -47,7 +47,9 @@ impl IArea2D for Ball {
 
         // Check screen bounds to make ball bounce.
         let ball_pos = self.base().get_position();
-        if (ball_pos.y < 0.0 && self.direction.y < 0.0) || (ball_pos.y > self._screen_size.y && self.direction.y > 0.0) {
+        if (ball_pos.y < 0.0 && self.direction.y < 0.0)
+            || (ball_pos.y > self._screen_size.y && self.direction.y > 0.0)
+        {
             self.direction.y = -self.direction.y;
         }
 
@@ -78,45 +80,48 @@ impl IArea2D for Ball {
         }
 
         /*
-        	_speed += delta
-            # Ball will move normally for both players,
-            # even if it's sightly out of sync between them,
-            # so each player sees the motion as smooth and not jerky.
-            if not stopped:
-                translate(_speed * delta * direction)
+           _speed += delta
+           # Ball will move normally for both players,
+           # even if it's sightly out of sync between them,
+           # so each player sees the motion as smooth and not jerky.
+           if not stopped:
+               translate(_speed * delta * direction)
 
-            # Check screen bounds to make ball bounce.
-            var ball_pos := position
-            if (ball_pos.y < 0 and direction.y < 0) or (ball_pos.y > _screen_size.y and direction.y > 0):
-                direction.y = -direction.y
+           # Check screen bounds to make ball bounce.
+           var ball_pos := position
+           if (ball_pos.y < 0 and direction.y < 0) or (ball_pos.y > _screen_size.y and direction.y > 0):
+               direction.y = -direction.y
 
-            if is_multiplayer_authority():
-                # Only the master will decide when the ball is out in
-                # the left side (its own side). This makes the game
-                # playable even if latency is high and ball is going
-                # fast. Otherwise, the ball might be out in the other
-                # player's screen but not this one.
-                if ball_pos.x < 0:
-                    get_parent().update_score.rpc(false)
-                    _reset_ball.rpc(false)
-            else:
-                # Only the puppet will decide when the ball is out in
-                # the right side, which is its own side. This makes
-                # the game playable even if latency is high and ball
-                # is going fast. Otherwise, the ball might be out in the
-                # other player's screen but not this one.
-                if ball_pos.x > _screen_size.x:
-                    get_parent().update_score.rpc(true)
-                    _reset_ball.rpc(true)
-         */
-
+           if is_multiplayer_authority():
+               # Only the master will decide when the ball is out in
+               # the left side (its own side). This makes the game
+               # playable even if latency is high and ball is going
+               # fast. Otherwise, the ball might be out in the other
+               # player's screen but not this one.
+               if ball_pos.x < 0:
+                   get_parent().update_score.rpc(false)
+                   _reset_ball.rpc(false)
+           else:
+               # Only the puppet will decide when the ball is out in
+               # the right side, which is its own side. This makes
+               # the game playable even if latency is high and ball
+               # is going fast. Otherwise, the ball might be out in the
+               # other player's screen but not this one.
+               if ball_pos.x > _screen_size.x:
+                   get_parent().update_score.rpc(true)
+                   _reset_ball.rpc(true)
+        */
     }
 }
 
 fn variant_array_to_vec(array: VariantArray) -> Vec<Variant> {
     let mut vec = Vec::new();
     for i in 0..array.len() {
-        vec.push(array.get(i).expect("Failed to get element from VariantArray"));
+        vec.push(
+            array
+                .get(i)
+                .expect("Failed to get element from VariantArray"),
+        );
     }
     vec
 }
