@@ -9,7 +9,6 @@ pub struct Ball {
     direction: Vector2,
     stopped: bool,
     _speed: f64,
-    _screen_size: Vector2,
     base: Base<Area2D>,
 }
 
@@ -26,16 +25,14 @@ impl IArea2D for Ball {
             direction: Vector2::LEFT,
             stopped: false,
             _speed: DEFAULT_SPEED,
-            _screen_size: Vector2::new(0.0, 0.0),
             base,
         }
     }
 
-    fn ready(&mut self) {
-        self._screen_size = self.base().get_viewport_rect().size
-    }
+    fn ready(&mut self) {}
 
     fn process(&mut self, delta: f64) {
+        let screen_size = self.base().get_viewport_rect().size;
         self._speed += delta;
 
         if !self.stopped {
@@ -50,7 +47,7 @@ impl IArea2D for Ball {
         // Check screen bounds to make ball bounce.
         let ball_pos = self.base().get_position();
         if (ball_pos.y < 0.0 && self.direction.y < 0.0)
-            || (ball_pos.y > self._screen_size.y && self.direction.y > 0.0)
+            || (ball_pos.y > screen_size.y && self.direction.y > 0.0)
         {
             self.direction.y = -self.direction.y;
         }
@@ -75,7 +72,7 @@ impl IArea2D for Ball {
             // the game playable even if latency is high and ball
             // is going fast. Otherwise, the ball might be out in the
             // other player's screen but not this one.
-            if ball_pos.x > self._screen_size.x {
+            if ball_pos.x > screen_size.x {
                 //self.base().get_parent().update_score.rpc(true);
                 let args = varray![true];
                 let args = variant_array_to_vec(args);
@@ -182,7 +179,7 @@ impl Ball {
 
     #[rpc(any_peer, call_local)]
     fn reset_ball(&mut self, for_left: bool) {
-        let screen_center = self._screen_size / 2.0;
+        let screen_center = self.base().get_viewport_rect().size / 2.0;
         self.base_mut().set_position(screen_center);
         if for_left {
             self.direction = Vector2::LEFT;
