@@ -15,6 +15,7 @@ pub struct Ball {
 use godot::classes::IArea2D;
 
 use crate::pong::Pong;
+use crate::variant_array_to_vec;
 
 #[godot_api]
 impl IArea2D for Ball {
@@ -114,18 +115,6 @@ impl IArea2D for Ball {
                    _reset_ball.rpc(true)
         */
     }
-}
-
-fn variant_array_to_vec(array: VariantArray) -> Vec<Variant> {
-    let mut vec = Vec::new();
-    for i in 0..array.len() {
-        vec.push(
-            array
-                .get(i)
-                .expect("Failed to get element from VariantArray"),
-        );
-    }
-    vec
 }
 
 #[godot_api]
