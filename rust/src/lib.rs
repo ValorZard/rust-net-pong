@@ -6,3 +6,4 @@ struct RustExtension;
 unsafe impl ExtensionLibrary for RustExtension {}
 
 mod player;
+mod ball;
