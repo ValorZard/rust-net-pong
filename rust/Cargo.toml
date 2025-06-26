@@ -5,7 +5,7 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
-godot = {git = "https://github.com/godot-rust/gdext.git", rev = "4a6f8033c0f117eff288183adb4c35b8874f718e"}
+godot = "0.3.1"
 
 [lib]
 crate-type = ["cdylib"] # Compile this crate to a dynamic C library.

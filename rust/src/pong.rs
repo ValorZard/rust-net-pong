@@ -144,12 +144,10 @@ impl INode2D for Pong {
             .unwrap()
             .signals()
             .pressed()
-            .connect_builder()
-            .object(&gd_ref)
-            .method_mut(|this: &mut Self| {
+            .builder()
+            .connect_other_mut(&gd_ref, |this: &mut Self| {
                 this._on_exit_game_pressed();
-            })
-            .done();
+            });
     }
 }
 

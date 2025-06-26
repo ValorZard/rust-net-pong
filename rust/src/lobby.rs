@@ -194,117 +194,95 @@ impl IPanel for Lobby {
         multiplayer.connection_failed.connect(_connected_fail)
         multiplayer.server_disconnected.connect(_server_disconnected)
              */
-        let mut multiplayer = self.base().get_multiplayer().unwrap();
+        let multiplayer = self.base().get_multiplayer().unwrap();
+        let gd_ref = self.to_gd();
         multiplayer
             .signals()
             .peer_connected()
-            .connect_builder()
-            .object(&self.to_gd())
-            .method_mut(|this: &mut Self, _id: i64| {
-                /*
-                # Someone connected, start the game!
-                var pong: Node2D = load("res://pong.tscn").instantiate()
-                # Connect deferred so we can safely erase it from the callback.
-                pong.game_finished.connect(_end_game, CONNECT_DEFERRED)
-
-                get_tree().get_root().add_child(pong)
-                hide()
-                */
+            .builder()
+            .connect_other_gd(&gd_ref, |mut this: Gd<Self>, _id: i64| {
                 godot_print!("Someone connected, start the game!");
-                let mut pong: Gd<Pong> = load::<PackedScene>("res://pong.tscn")
+                let pong: Gd<Pong> = load::<PackedScene>("res://pong.tscn")
                     .instantiate()
                     .unwrap()
                     .cast();
                 // Connect deferred so we can safely erase it from the callback.
                 pong.signals()
                     .game_finished()
-                    .connect_builder()
-                    .object(&this.to_gd())
-                    .method_mut(|this: &mut Self| {
-                        this._end_game("Client disconnected.".to_string());
-                    })
+                    .builder()
                     .flags(ConnectFlags::DEFERRED)
-                    .done();
+                    .connect_other_gd(&this, |mut this: Gd<Self>| {
+                        this.bind_mut()
+                            ._end_game("Client disconnected.".to_string());
+                    });
 
-                this.base_mut()
+                this.bind_mut()
+                    .base_mut()
                     .get_tree()
                     .unwrap()
                     .get_root()
                     .unwrap()
                     .add_child(&pong);
-                this.base_mut().hide();
-            })
-            .done();
+                this.bind_mut().base_mut().hide();
+            });
         multiplayer
             .signals()
             .peer_disconnected()
-            .connect_builder()
-            .object(&self.to_gd())
-            .method_mut(|this: &mut Self, _id: i64| {
+            .builder()
+            .connect_other_mut(&self.to_gd(), |this: &mut Self, _id: i64| {
                 if this.base().get_multiplayer().unwrap().is_server() {
                     this._end_game("Client disconnected.".to_string());
                 } else {
                     this._end_game("Server disconnected.".to_string());
                 }
-            })
-            .done();
+            });
         multiplayer
             .signals()
             .connected_to_server()
-            .connect_builder()
-            .object(&self.to_gd())
-            .method_mut(|this: &mut Self| {
+            .builder()
+            .connect_other_mut(&self.to_gd(), |this: &mut Self| {
                 // This function is not needed for this project.
                 ()
-            })
-            .done();
+            });
         multiplayer
             .signals()
             .connection_failed()
-            .connect_builder()
-            .object(&self.to_gd())
-            .method_mut(|this: &mut Self| {
+            .builder()
+            .connect_other_mut(&self.to_gd(), |this: &mut Self| {
                 this._set_status("Couldn't connect.".to_string(), false);
                 let mut multiplayer = this.base().get_multiplayer().unwrap();
                 multiplayer.set_multiplayer_peer(Gd::null_arg()); // Remove peer.
                 this.host_button.as_mut().unwrap().set_disabled(false);
                 this.join_button.as_mut().unwrap().set_disabled(false);
-            })
-            .done();
+            });
         multiplayer
             .signals()
             .server_disconnected()
-            .connect_builder()
-            .object(&self.to_gd())
-            .method_mut(|this: &mut Self| {
+            .builder()
+            .connect_other_mut(&self.to_gd(), |this: &mut Self| {
                 this._end_game("Server disconnected.".to_string());
-            })
-            .done();
+            });
 
         let gd_ref = self.to_gd();
 
-        self.host_button
-            .as_mut()
-            .unwrap()
+        // Clone the Gd<Button> references to avoid borrowing self mutably and immutably at the same time
+        let host_button = self.host_button.as_ref().unwrap().clone();
+        host_button
             .signals()
             .pressed()
-            .connect_builder()
-            .object(&gd_ref)
-            .method_mut(|this: &mut Self| {
+            .builder()
+            .connect_other_mut(&gd_ref, |this: &mut Self| {
                 this._on_host_pressed();
-            })
-            .done();
-        self.join_button
-            .as_mut()
-            .unwrap()
+            });
+
+        let join_button = self.join_button.as_ref().unwrap().clone();
+        join_button
             .signals()
             .pressed()
-            .connect_builder()
-            .object(&gd_ref)
-            .method_mut(|this: &mut Self| {
+            .builder()
+            .connect_other_mut(&gd_ref, |this: &mut Self| {
                 this._on_join_pressed();
-            })
-            .done();
+            });
     }
 }
 
